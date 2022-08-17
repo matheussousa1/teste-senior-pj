@@ -1,3 +1,4 @@
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
 <style type="text/css">
   #new-search-area {
     width: 100%;
@@ -13,120 +14,149 @@
 </style>
 <script type="text/javascript">
 $(document).ready( function () {
-   //mascara digito 9
-  var maskBehavior = function (val) {
-    return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
-  },
-  options = { onKeyPress: function(val, e, field, options) {
-      field.mask(maskBehavior.apply({}, arguments), options);
-    }
-  };
+    
+    $('.cpf').mask('999.999.999-99');
+    $('.cep').mask('99999-999');
 
-  $(".empresas").select2({
-      tags: true,
-      tokenSeparators: [',', ' ']
-  });
+    $('#salario').maskMoney({thousands:'', decimal:'.'});
+    
+    // ativar o tooltip
+    $('body').tooltip({selector: '[data-toggle="tooltip"]'});
 
-  $('.contato').mask(maskBehavior, options);
-
-  // ativar o tooltip
-  $('body').tooltip({selector: '[data-toggle="tooltip"]'});
-
-  $('#tabela').DataTable({
-    "paging": true,
-    "lengthChange": true,
-    "searching": true,
-    "ordering": true,
-    "info": true,
-    "responsive": true,
-    "autoWidth": false,
-    "pageLength": 10,
-    dom: 'Bfrtip',
-    buttons: [
-      'excel', 'print'
-    ],
-    "ajax": {
-      "url": "<?php echo AJAX; ?>usuarios.php?acao=buscar",
-      "type": "GET"
-    },
-    "language": {
-      "url": "https://cdn.datatables.net/plug-ins/1.10.22/i18n/Portuguese-Brasil.json",
-      buttons: {
-        print: 'Imprimir'
-      }
-    },
-    initComplete : function() {
-      $("#tabela_filter").detach().appendTo('#new-search-area');
-    },    
-    "createdRow": function ( row, data, index ) {
-      if(data['ativo'] == 0){
-        $(row).addClass('table-danger');
-      }
-    },
-    "columns": [
-      { "data": "nome" },
-      { "data": "email" },
-      { "data": "telefone" },
-      { "data": "dataNascimento" },
-      { "data": "cidade" },
-      { "data": "empresas" },
-      { "data": "dataCadastro" },
-      { "data": "button" }
-    ]
-  });
+    $('#tabela').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "responsive": true,
+        "autoWidth": false,
+        "pageLength": 10,
+        dom: 'Bfrtip',
+        buttons: [
+          'excel', 'print'
+        ],
+        "ajax": {
+          "url": "<?php echo AJAX; ?>colaborador.php?acao=buscar",
+          "type": "GET"
+        },
+        "language": {
+          "url": "https://cdn.datatables.net/plug-ins/1.10.22/i18n/Portuguese-Brasil.json",
+          buttons: {
+            print: 'Imprimir'
+          }
+        },
+        initComplete : function() {
+          $("#tabela_filter").detach().appendTo('#new-search-area');
+        },    
+        "createdRow": function ( row, data, index ) {
+          if(data['ativo'] == 0){
+            $(row).addClass('table-danger');
+          }
+        },
+        "columns": [
+            { "data": "nome" },
+            { "data": "cpf"},
+            { "data": "rg"},
+            { "data": "dataNascimento"},
+            { "data": "cep"},
+            { "data": "endereco"},
+            { "data": "numero"},
+            { "data": "cidade"},
+            { "data": "estado"},
+            { "data": "dataCadastro"},
+            { "data": "button" }
+        ]
+    });
 
   // adicionar unser
-  $(document).on("click","#btnadd",function(){
-    $("#modal_add").modal("show");
-    $("#nome").focus();
-  });
+    $(document).on("click","#btnadd",function(){
+        $("#modal_add").modal("show");
+        $("#nome").focus();
+    });
 
-
-  $('#formCadastrar').validate({
-    rules: {
-      nome : { required: true},
-      email : { required: true},
-    },
-    messages: {
-      nome : { required: 'Preencha este campo' },
-      email : { required: 'Preencha este campo'},
-    },
-    submitHandler: function( form ){
-      var dados = $('#formCadastrar').serialize();
-      $.ajax({
-        type: "GET",
-        url: "<?php echo AJAX; ?>usuarios.php?acao=cadastrar",
-        data: dados,
-        dataType: 'json',
-        success: function(res) {
-          if(res.status == 200){
-            swal({   
-              title: "Cadastrado com Sucesso",  
-              type: "success",   
-              showConfirmButton: false,
-            });
-            window.setTimeout(function(){
-              $('#formCadastrar input').val(""); 
-              swal.close();
-              var table = $('#tabela').DataTable(); 
-              table.ajax.reload( null, false );
-              $("#modal_add").modal("hide");
-            } ,2500);
-          }else{
-            swal({   
-              title: "Error",  
-              type: "error",   
-              showConfirmButton: false,
-            });
-            window.setTimeout(function(){
-              swal.close();
-            } ,2500);
-          }
+    $('#formCadastrar').validate({
+        rules: {
+          nome : { required: true},
+          cpf : { required: true},
+        },
+        messages: {
+          nome : { required: 'Preencha este campo' },
+          cpf : { required: 'Preencha este campo'},
+        },
+        submitHandler: function( form ){
+          var dados = $('#formCadastrar').serialize();
+          $.ajax({
+            type: "GET",
+            url: "<?php echo AJAX; ?>colaborador.php?acao=cadastrar",
+            data: dados,
+            dataType: 'json',
+            success: function(res) {
+              if(res.status == 200){
+                swal({   
+                  title: "Cadastrado com Sucesso",  
+                  type: "success",   
+                  showConfirmButton: false,
+                });
+                window.setTimeout(function(){
+                  $('#formCadastrar input').val(""); 
+                  swal.close();
+                  var table = $('#tabela').DataTable(); 
+                  table.ajax.reload( null, false );
+                  $("#modal_add").modal("hide");
+                } ,2500);
+              }else{
+                swal({   
+                  title: "Error",  
+                  type: "error",   
+                  showConfirmButton: false,
+                });
+                window.setTimeout(function(){
+                  swal.close();
+                } ,2500);
+              }
+            }
+          });
+          return false;
         }
-      });
-      return false;
-    }
-  });
+    });
+
+
+    // buscar CEP
+    $('.cep').blur(function(event) {
+        var cep = $(this).val().replace(/[^\d]+/g,'');
+        if(cep.length == 8){
+            $("#carregandoCep").removeClass("hide");
+            $.ajax({
+                type: "GET",
+                url: 'https://viacep.com.br/ws/'+cep+'/json/',
+                dataType: 'json',
+                success: function(dados) {
+                    $("#carregandoCep").addClass("hide");
+                    if(dados.erro == true){
+                        swal({   
+                            title: "CEP não encontrado",  
+                            type: "error",   
+                            showConfirmButton: true,
+                        });
+                        $('#cep').val('');
+                    }else{
+                        $('#endereco').val(dados.logradouro);
+                        $("#cidade" ).val(dados.localidade);
+                        $("#estado" ).val(dados.uf);
+                    }
+                }
+            }); 
+        }else{
+            swal({   
+                title: "CEP Incompleto",  
+                type: "error",   
+                showConfirmButton: true,
+            });
+            $('#cep').val('');
+        }
+    });
+
      //abrir modal pra edição
     $(document).on("click",".btnedit",function(){
       var id_user = $(this).attr("id_user");
@@ -134,18 +164,22 @@ $(document).ready( function () {
         id: id_user
       };
       $.ajax({
-        url : "<?php echo AJAX; ?>usuarios.php?acao=buscarDados",
+        url : "<?php echo AJAX; ?>colaborador.php?acao=buscarDados",
         type: "GET",
         data : value,
         success: function(data, textStatus, jqXHR){
-          var data = jQuery.parseJSON(data);
-          $("#nomeEdit").val(data.nome);
-          $("#emailEdit").val(data.email);
-          $("#telefoneEdit").val(data.telefone);
-          $("#dataNascimentoEdit").val(data.dataNascimento);
-          $("#cidadeEdit").val(data.cidade);
-          $("#idObj").val(data.id);
-          $("#moda_edit").modal('show');
+            var data = jQuery.parseJSON(data);
+            $("#nomeEdit").val(data.nome);
+            $("#cpfEdit").val(data.cpf);
+            $("#rgEdit").val(data.rg);
+            $("#dataNascimentoEdit").val(data.dataNascimento);
+            $("#cepEdit").val(data.cep);
+            $("#enderecoEdit").val(data.endereco);
+            $("#numeroEdit").val(data.numero);
+            $("#cidadeEdit").val(data.cidade);
+            $("#estadoEdit").val(data.estado);
+            $("#idObj").val(data.id);
+            $("#moda_edit").modal('show');
         },
         error: function(jqXHR, textStatus, errorThrown){
           swal("Error!", textStatus, "error");
@@ -156,17 +190,17 @@ $(document).ready( function () {
     $('#formCadastrarEdit').validate({
       rules: {
         nome : { required: true},
-        email : { required: true},
+        cpf : { required: true},
       },
       messages: {
         nome : { required: 'Preencha este campo' },
-        email : { required: 'Preencha este campo'},
+        cpf : { required: 'Preencha este campo'},
       },
       submitHandler: function( form ){
         var dados = $('#formCadastrarEdit').serialize();
         $.ajax({
           type: "GET",
-          url: "<?php echo AJAX; ?>usuarios.php?acao=editar",
+          url: "<?php echo AJAX; ?>colaborador.php?acao=editar",
           data: dados,
           dataType: 'json',
           crossDomain: false,
@@ -214,7 +248,7 @@ $(document).ready( function () {
         closeOnConfirm: true}).then(function(){   
           $.ajax({
           type: "GET",
-          url: "<?php echo AJAX; ?>usuarios.php",
+          url: "<?php echo AJAX; ?>colaborador.php",
           data: {'acao':'deletar', 'id': id_user},
           dataType: 'json',
           success: function(res) {
@@ -258,7 +292,7 @@ $(document).ready( function () {
         closeOnConfirm: true}).then(function(){   
           $.ajax({
           type: "GET",
-          url: "<?php echo AJAX; ?>usuarios.php",
+          url: "<?php echo AJAX; ?>colaborador.php",
           data: {'acao':'ativar', 'id': id_user},
           dataType: 'json',
           success: function(res) {
@@ -289,73 +323,101 @@ $(document).ready( function () {
       });
     });
 
-    // adicionar unser
-    $(document).on("click",".btnempresas",function(){
-      var id = $(this).attr("id_user");
-      $("#empresas").html('');
-      $.ajax({
-        url: '<?php echo AJAX; ?>usuarios.php?acao=buscarEmpresas',
-        type: 'GET',
-        dataType: 'json',
-        data: {id: id},
-      })
-      .done(function(res) {
-        $("#modal_empresa").modal("show");
-        $("#idObjEmpresa").val(id);
-        var selected = '';
-        $.each(res,function(key, value){
-          if(value.selected == 1){ 
-            selected = 'selected';   
-          }else{
-            selected = '';   
-          }
+ 
 
-          $("#empresas").append('<option value=' + value.id + ' '+selected+' >' + value.nome + '</option>'); // return empty
-        });
-      });
-      
+    //vincular salarios
+    $(document).on("click",".btnhistoricosalario",function(){
+      var id_user = $(this).attr("id_user");
+      $("#idUsuario").val(id_user);
+      buscarHistoricoSalario(id_user);
     });
 
+    $(document).on("click","#btnaddsalario",function(){
+        $("#modal_add_salario").modal("show");
+        $("#nome").focus();
+    });
 
-    $('#formCadastrarEmpresas').validate({
+    $('#formCadastrarSalario').validate({
+      rules: {
+        salario : { required: true},
+      },
+      messages: {
+        salario : { required: 'Preencha este campo' },
+      },
       submitHandler: function( form ){
-        var dados = $('#formCadastrarEmpresas').serialize();
+        var dados = $('#formCadastrarSalario').serialize();
         $.ajax({
           type: "GET",
-          url: "<?php echo AJAX; ?>usuarios.php?acao=cadastrarEmpresas",
+          url: "<?php echo AJAX; ?>colaborador.php?acao=cadastrarSalario",
           data: dados,
           dataType: 'json',
           success: function(res) {
             if(res.status == 200){
-              swal({   
+             swal({   
                 title: "Cadastrado com Sucesso",  
                 type: "success",   
                 showConfirmButton: false,
-              });
-              window.setTimeout(function(){
-                $('#formCadastrarEmpresas input').val(""); 
-                swal.close();
-                var table = $('#tabela').DataTable(); 
-                table.ajax.reload( null, false );
-                $("#modal_empresa").modal("hide");
+                 });
+               window.setTimeout(function(){
+                   $('#formCadastrarSalario input').val(""); 
+                   swal.close();
+                    var table = $('#tabelaSalarios').DataTable(); 
+                    table.ajax.reload( null, false );
+                    $("#modal_add_salario").modal("hide");
               } ,2500);
-            }else{
-              swal({   
+          }else{
+            swal({   
                 title: "Error",  
                 type: "error",   
                 showConfirmButton: false,
-              });
-              window.setTimeout(function(){
-                swal.close();
+                 });
+               window.setTimeout(function(){
+                   swal.close();
               } ,2500);
-            }
           }
+      }
         });
         return false;
       }
     });
 
+   
  });  
+
+//vincular unidades
+function buscarHistoricoSalario(id) {
+
+  var idUser = id;
+
+  $('#tabelaSalarios').DataTable({
+    "paging": true,
+    "lengthChange": true,
+    "searching": true,
+    "ordering": true,
+    "info": false,
+    "responsive": true,
+    "autoWidth": false,
+    "pageLength": 10,
+    "destroy": true,
+    "ajax": {
+        "url": "<?php echo AJAX; ?>colaborador.php?acao=buscarHistoricoSalario&idUser="+idUser,
+        "type": "GET"
+    },
+    "language": {
+      "url": "http://cdn.datatables.net/plug-ins/1.10.16/i18n/Portuguese-Brasil.json"
+    },
+    "createdRow": function ( row, data, index ) {
+      console.log(data['ativo']);
+        if(data['ativo'] == 0){
+          $(row).addClass('danger');
+        }
+      },
+    "columns": [
+      { "data": "salario" }
+    ]
+  });
+  $("#modal_vincular_salarios").modal('show');
+  }
 </script>
 
 
@@ -367,7 +429,7 @@ $(document).ready( function () {
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Usuários</h5>
+                            <h5 class="m-b-10">Colaborador</h5>
                         </div>
                     </div>
                 </div>
@@ -381,11 +443,11 @@ $(document).ready( function () {
                 <div class="card">
 
                     <div class="card-header">
-                        <h5>Gerenciar Usuários</h5>
+                        <h5>Gerenciar Colaborador</h5>
                     </div>
                     <div class="card-body">
                         <div class="mb20 col-sm-12 text-center">
-                          <button type="submit" class="btn btn-raised  btn-success" id="btnadd" name="btnadd"><i class="fa fa-plus"></i> Adicionar Usuário</button>
+                          <button type="submit" class="btn btn-raised  btn-success" id="btnadd" name="btnadd"><i class="fa fa-plus"></i> Adicionar Colaborador</button>
                         </div>
                         <div class="col-md-6">
                             <div id="new-search-area"></div>
@@ -394,11 +456,14 @@ $(document).ready( function () {
                           <thead>
                             <tr class="tableheader">
                               <th>Nome</th>
-                              <th>Email</th>
-                              <th>Telefone</th>
+                              <th>CPF</th>
+                              <th>RG</th>
                               <th>Data Nascimento</th>
+                              <th>CEP</th>
+                              <th>Endereço</th>
+                              <th>Numero</th>
                               <th>Cidade</th>
-                              <th>Empresas</th>
+                              <th>Estado</th>
                               <th>Data Cadastro</th>
                               <th width="17%">Ações</th>
                             </tr>
@@ -432,20 +497,36 @@ $(document).ready( function () {
               <input type="text" class="form-control" name="nome" id="nome">
             </div>
             <div class="form-group">
-              <label>Email</label>
-              <input type="email" class="form-control" name="email" id="email">
+              <label>CPF</label>
+              <input type="text" class="form-control cpf" name="cpf" id="cpf">
             </div>
             <div class="form-group">
-              <label>Telefone</label>
-              <input type="text" class="form-control contato" name="telefone" id="telefone">
+              <label>RG</label>
+              <input type="text" class="form-control contato" name="rg" id="rg">
             </div>
             <div class="form-group">
               <label>Data Nascimento</label>
               <input type="date" class="form-control" name="dataNascimento" id="dataNascimento">
             </div>
             <div class="form-group">
+              <label>CEP</label>
+              <input type="text" class="form-control cep" name="cep" id="cep">
+            </div>
+            <div class="form-group">
+              <label>Endereço</label>
+              <input type="text" class="form-control" name="endereco" id="endereco">
+            </div>
+            <div class="form-group">
+              <label>Numero</label>
+              <input type="text" class="form-control" name="numero" id="numero">
+            </div>
+            <div class="form-group">
               <label>Cidade</label>
               <input type="text" class="form-control" name="cidade" id="cidade">
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <input type="text" class="form-control" name="estado" id="estado">
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
@@ -471,26 +552,42 @@ $(document).ready( function () {
         <!--modal header-->
           <form role="form" id="formCadastrarEdit" autocomplete="off">
         <div class="modal-body">
-          <div class="form-group">
-            <label>Nome</label>
-            <input type="text" class="form-control" name="nome" id="nomeEdit">
-          </div>
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" class="form-control" name="email" id="emailEdit">
-          </div>
-          <div class="form-group">
-            <label>Telefone</label>
-            <input type="text" class="form-control contato" name="telefone" id="telefoneEdit">
-          </div>
-          <div class="form-group">
-            <label>Data Nascimento</label>
-            <input type="date" class="form-control" name="dataNascimento" id="dataNascimentoEdit">
-          </div>
-          <div class="form-group">
-            <label>Cidade</label>
-            <input type="text" class="form-control" name="cidade" id="cidadeEdit">
-          </div>  
+            <div class="form-group">
+              <label>Nome</label>
+              <input type="text" class="form-control" name="nome" id="nomeEdit">
+            </div>
+            <div class="form-group">
+              <label>CPF</label>
+              <input type="text" class="form-control cpf" name="cpf" id="cpfEdit">
+            </div>
+            <div class="form-group">
+              <label>RG</label>
+              <input type="text" class="form-control contato" name="rg" id="rgEdit">
+            </div>
+            <div class="form-group">
+              <label>Data Nascimento</label>
+              <input type="date" class="form-control" name="dataNascimento" id="dataNascimentoEdit">
+            </div>
+            <div class="form-group">
+              <label>CEP</label>
+              <input type="text" class="form-control cep" name="cep" id="cepEdit">
+            </div>
+            <div class="form-group">
+              <label>Endereço</label>
+              <input type="text" class="form-control" name="endereco" id="enderecoEdit">
+            </div>
+            <div class="form-group">
+              <label>Numero</label>
+              <input type="text" class="form-control" name="numero" id="numeroEdit">
+            </div>
+            <div class="form-group">
+              <label>Cidade</label>
+              <input type="text" class="form-control" name="cidade" id="cidadeEdit">
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <input type="text" class="form-control" name="estado" id="estadoEdit">
+            </div>
         <input type="hidden" name="idObj" id="idObj" value="">
         <div class="modal-footer">
           <button type="button" class="btn btn-raised btn-default" data-dismiss="modal">Fechar</button>
@@ -506,31 +603,61 @@ $(document).ready( function () {
     </div>
     <!--form-kantor-modal-->
 
-<!-- modal alterar senha-->
-<div id="modal_empresa" class="modal fade">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-            <h4 class="modal-title">Selecione Empresas</h4>
-            <button type="button" class="close" data-dismiss="modal">×</button>
-        </div>
+
+<div id="modal_vincular_salarios" class="modal fade">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Historico Salarios</h4>
+        <button type="button" class="close" data-dismiss="modal">×</button>
+      </div>
       <!--modal header-->
-      <form role="form" id="formCadastrarEmpresas" autocomplete="off">
-        <div class="modal-body">
-          <div class="form-group">
-            <h5>Selecione Empresas</h5>
-            <select class="empresas col-sm-12" multiple="multiple" id="empresas" name="empresas[]" style="width: 100%">
-            </select>
-          </div> 
-        </div>
-        <input type="hidden" name="idObj" id="idObjEmpresa" value="">
-        <div class="modal-footer">
-          <button type="button" class="btn btn-raised  btn-default" data-dismiss="modal">Fechar</button>
-          <button type="submit" class="btn btn-raised  btn-primary hide" id="bntAlterarSenha">Cadastrar</button>
-        </div>
-      </form>
+      <div class="modal-body">
+        <button type="submit" class="btn btn-raised btn-primary mb-3" id="btnaddsalario"><i class="fa fa-plus"></i> Adicionar Salario</button>
+        <table id="tabelaSalarios" class="table table-striped table-bordered table-hover">
+          <thead>
+            <tr class="tableheader">
+              <th>Salario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- resultado -->
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-raised btn-danger" data-dismiss="modal">Fechar</button>
+      </div>
     </div>
-    <!--modal footer-->
+      <!--modal footer-->
     </div>
-<!--modal-content-->
-</div>
+    <!--modal-content-->
+  </div>
+
+  <div id="modal_add_salario" class="modal fade">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Adicionar Salario</h4>
+        <button type="button" class="close" data-dismiss="modal">×</button>
+      </div>
+      <!--modal header-->
+      <div class="modal-body">
+        <form role="form" id="formCadastrarSalario" autocomplete="off">
+            <div class="form-group">
+                <label>Salario</label>
+                <input type="text" class="form-control" name="salario" id="salario">
+            </div>
+            <input type="hidden" name="idUsuario" id="idUsuario" value="">
+          <div class="modal-footer">
+            <button type="button" class="btn btn-raised  btn-default" data-dismiss="modal">Fechar</button>
+            <button type="submit" class="btn btn-raised  btn-primary">Adicionar</button>
+          </div>
+         </form>
+      </div>
+        <!--modal footer-->
+      </div>
+      <!--modal-content-->
+    </div>
+    <!--modal-dialog modal-lg-->
+  </div>

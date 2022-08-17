@@ -7,9 +7,7 @@
                       <label>Menu</label>
                     </li>
 
-                    <li class="nav-item"><a href="<?php echo SITE.'inicio/inicio' ?>" class="nav-link "><span class="pcoded-micon"><i class="fas fa-th"></i></span><span class="pcoded-mtext">Painel</span></a></li>
-                    <li class="nav-item"><a href="<?php echo SITE.'usuarios/gerenciar' ?>" class="nav-link "><span class="pcoded-micon"><i class="fas fa-users-cog"></i></span><span class="pcoded-mtext">Usuários</span></a></li>
-                    <li class="nav-item"><a href="<?php echo SITE.'empresas/gerenciar' ?>" class="nav-link "><span class="pcoded-micon"><i class="fas fa-cogs"></i></span><span class="pcoded-mtext">Empresas</span></a></li>
+                    <li class="nav-item"><a href="<?php echo SITE.'inicio/inicio' ?>" class="nav-link "><span class="pcoded-micon"><i class="fas fa-th"></i></span><span class="pcoded-mtext">Colaboradores</span></a></li>
 
                 </ul>
             </div>

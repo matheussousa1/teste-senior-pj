@@ -3,9 +3,8 @@
   <div class="flex-grow-1">
     <div class="h-100 d-md-flex align-items-center auth-side-img">
       <div class="col-sm-10 auth-content w-auto">
-        <img src="assets/images/auth/logo_teste.png" alt="" class="img-fluid logo-login">
         <h1 class="text-white my-4">Bem vindo!</h1>
-        <h4 class="text-white font-weight-normal">Processo seletivo Contato Seguro Programador Sênior </br> Candidato: Matheus Ferreira Sousa</h4>
+        <h4 class="text-white font-weight-normal">Processo seletivo Pasquali Solution Programador Sênior </br> Candidato: Matheus Ferreira Sousa</h4>
       </div>
     </div>
     <div class="auth-side-form">
